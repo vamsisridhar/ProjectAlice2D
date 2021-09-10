@@ -1,0 +1,54 @@
+cmake_minimum_required(VERSION 3.19)
+project(PROJECT_ALICE_2D)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
+
+include(CTest)
+enable_testing()
+
+
+
+# CPack
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+include(CPack)
+
+
+
+# Source Files
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+file(GLOB_RECURSE SOURCES
+    "${SRC_DIR}/*.hpp"
+    "${SRC_DIR}/*.cpp"
+)
+
+
+# Execution
+add_executable("${PROJECT_NAME}" "${SOURCES}")
+target_include_directories("${PROJECT_NAME}" PRIVATE "${SRC_DIR}")
+target_link_directories("${PROJECT_NAME}" PRIVATE "${SRC_DIR}")
+
+# GLFW
+set(GLFW_DIR "${LIB_DIR}/glfw-3.3.4")
+add_subdirectory("${GLFW_DIR}")
+target_link_libraries("${PROJECT_NAME}" "glfw" "${GLFW_LIBRARIES}")
+target_include_directories("${PROJECT_NAME}" PRIVATE "${GLFW_DIR}/include")
+target_compile_definitions("${PROJECT_NAME}" PRIVATE "GLFW_INCLUDE_NONE")
+
+find_package(Vulkan REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
+
+#glm
+set(GLM_DIR "${LIB_DIR}/glm")
+add_subdirectory("${GLM_DIR}")
+target_link_libraries("${PROJECT_NAME}" "glm" "${GLM_LIBRARIES}")
+target_include_directories("${PROJECT_NAME}" PRIVATE "${GLM_DIR}/glm")
+target_compile_definitions("${PROJECT_NAME}" PRIVATE "GLFW_INCLUDE_NONE")
+
+
+
