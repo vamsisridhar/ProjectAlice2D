@@ -2,7 +2,8 @@
 
 #include "lve_device.hpp"
 #include "lve_pipeline.hpp"
-#include "lve_game_object.hpp"
+//#include "lve_game_object.hpp"
+#include "entity_components.hpp"
 // std
 #include <memory>
 #include <vector>
@@ -17,7 +18,7 @@ class SimpleRenderSystem {
   SimpleRenderSystem(const SimpleRenderSystem &) = delete;
   SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
-  void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<LveGameObject> &gameObjects);
+  void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<Entity> &gameObjects, Coordinator &ecsCoordinator);
 
  private:
   void createPipelineLayout();

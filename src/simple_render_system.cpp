@@ -1,4 +1,5 @@
 #include "simple_render_system.hpp"
+
 // libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -10,7 +11,6 @@
 #include <stdexcept>
 
 namespace lve {
-  
 
 struct SimplePushConstantData {
   glm::mat2 transform{1.f};
@@ -60,15 +60,16 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
 }
 
 
-void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<LveGameObject> &gameObjects){
+void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<Entity> &gameObjects, Coordinator &ecsCoordinator){
   lvePipeline->bind(commandBuffer);
   for (auto&obj:gameObjects){
-    obj.transform.rotation = glm::mod(obj.transform.rotation + 0.01f, glm::two_pi<float>());
+
+    ecsCoordinator.GetComponent<Transform>(obj).rotation = glm::mod(ecsCoordinator.GetComponent<Transform>(obj).rotation + 0.01f, glm::two_pi<float>());
 
     SimplePushConstantData push{};
-    push.offset = {obj.transform.translation.x, -obj.transform.translation.y};
-    push.color = obj.color;
-    push.transform = obj.transform.mat2();
+    push.offset = {ecsCoordinator.GetComponent<Transform>(obj).position.x, -ecsCoordinator.GetComponent<Transform>(obj).position.y};
+    push.color = ecsCoordinator.GetComponent<Model>(obj).color;
+    push.transform = ecsCoordinator.GetComponent<Transform>(obj).mat2();
 
     vkCmdPushConstants(
       commandBuffer, 
@@ -78,8 +79,8 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::v
       sizeof(SimplePushConstantData), 
       &push);
 
-    obj.model->bind(commandBuffer);
-    obj.model->draw(commandBuffer);
+    ecsCoordinator.GetComponent<Model>(obj).model->bind(commandBuffer);
+    ecsCoordinator.GetComponent<Model>(obj).model->draw(commandBuffer);
   }
 }
 
