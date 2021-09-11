@@ -10,7 +10,7 @@
 #include <array>
 #include <cassert>
 #include <stdexcept>
-#include <chrono>
+
 
 namespace lve {
 
@@ -26,17 +26,29 @@ void FirstApp::run() {
   while (!lveWindow.shouldClose()) {
     glfwPollEvents();
 
-    auto startTime = std::chrono::high_resolution_clock::now();
+    
+    if (clockStarted)
+    {
+      stopTime = std::chrono::high_resolution_clock::now();
+      dt = std::chrono::duration<float, std::chrono::seconds::period>(stopTime - startTime).count();
+      clockStarted = false;
+    }
 
-		physicsSystem->Update(dt, ecsCoordinator, mEntities);
+    physicsSystem->Update(dt, ecsCoordinator, entities);
 
-		auto stopTime = std::chrono::high_resolution_clock::now();
+    if (!clockStarted)
+    {
+      startTime = std::chrono::high_resolution_clock::now();
+      clockStarted = true;
+    }
 
-		dt = std::chrono::duration<float, std::chrono::seconds::period>(stopTime - startTime).count();
+		
+
+
     
     if(auto commandBuffer = lveRenderer.beginFrame()){
       lveRenderer.beginSwapChainRenderPass(commandBuffer);
-      simpleRenderSystem.renderGameObjects(commandBuffer, mEntities, ecsCoordinator);
+      simpleRenderSystem.renderGameObjects(commandBuffer, entities, ecsCoordinator);
       lveRenderer.endSwapChainRenderPass(commandBuffer);
       lveRenderer.endFrame();
 
@@ -46,22 +58,6 @@ void FirstApp::run() {
   vkDeviceWaitIdle(lveDevice.device());
 }
 
-std::unique_ptr<LveModel> createCircleModel(LveDevice& device, unsigned int numSides) {
-  std::vector<LveModel::Vertex> uniqueVertices{};
-  for (int i = 0; i < numSides; i++) {
-    float angle = i * glm::two_pi<float>() / numSides;
-    uniqueVertices.push_back({{glm::cos(angle), glm::sin(angle)}});
-  }
-  uniqueVertices.push_back({});  // adds center vertex at 0, 0
- 
-  std::vector<LveModel::Vertex> vertices{};
-  for (int i = 0; i < numSides; i++) {
-    vertices.push_back(uniqueVertices[i]);
-    vertices.push_back(uniqueVertices[(i + 1) % numSides]);
-    vertices.push_back(uniqueVertices[numSides]);
-  }
-  return std::make_unique<LveModel>(device, vertices);
-}
 
 void FirstApp::loadGameObjects() {
 
@@ -78,35 +74,15 @@ void FirstApp::loadGameObjects() {
   signature.set(ecsCoordinator.GetComponentType<Transform>());
   signature.set(ecsCoordinator.GetComponentType<Model>());
   ecsCoordinator.SetSystemSignature<PhysicsSystem>(signature);
-
   
-	std::vector<Entity> entities(MAX_ENTITIES);
-  
- 
-  std::shared_ptr<LveModel> circleModel = createCircleModel(lveDevice, 64);
+	entities.resize(MAX_ENTITIES);
 
-  Entity circle = ecsCoordinator.CreateEntity();
+  Primitive primitive{lveDevice, ecsCoordinator};
 
-  ecsCoordinator.AddComponent(circle, Model{ .model = circleModel, .color = {.1f,.1f,.5f}});
-  ecsCoordinator.AddComponent(circle, Transform{ .position = {.5f,.0f}, .scale =  {.1f,.1f}, .rotation = 0});
-  ecsCoordinator.AddComponent(circle, RigidBody{.velocity={.0f,-.0001f}, .acceleration = {-.0001f, .0f}});
+  entities[0] = primitive.Circle({.5f,.5f}, 0.1f, {.0f, .0f}, {.0f, -9.8f}, {.1f,.1f,.5f});
+  entities[1] = primitive.Circle({-.5f,.5f}, 0.1f, {.0f, .0f}, {.0f, -9.8f}, {.5f,.1f,.5f});
+  entities[2] = primitive.Circle({.0f,.5f}, 0.1f, {.0f, .0f}, {.0f, -9.8f}, {.1f,.5f,.5f});
 
-  entities[0] = circle;
-
-  mEntities.resize(MAX_ENTITIES);
-  mEntities = entities;
-  
-
-
-   /*
-  auto circle = LveGameObject::createGameObject();
-  circle.model = circleModel;
-  circle.color = {.1f,.1f,.5f};
-  circle.transform.scale = {.1f,.1f};
-  circle.transform.translation = {.5f,.5f};
-
-  gameObjects.push_back(std::move(circle));
-  */
 
 }
 

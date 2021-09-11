@@ -63,6 +63,7 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
 void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<Entity> &gameObjects, Coordinator &ecsCoordinator){
   lvePipeline->bind(commandBuffer);
   for (auto&obj:gameObjects){
+    if (obj != 0){
 
     ecsCoordinator.GetComponent<Transform>(obj).rotation = glm::mod(ecsCoordinator.GetComponent<Transform>(obj).rotation + 0.01f, glm::two_pi<float>());
 
@@ -81,6 +82,7 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::v
 
     ecsCoordinator.GetComponent<Model>(obj).model->bind(commandBuffer);
     ecsCoordinator.GetComponent<Model>(obj).model->draw(commandBuffer);
+    }
   }
 }
 

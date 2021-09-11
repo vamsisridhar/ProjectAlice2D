@@ -37,7 +37,7 @@ public:
 
 		// Copy element at end into deleted element's place to maintain density
 		size_t indexOfRemovedEntity = mEntityToIndexMap[entity];
-		size_t indexOfLastElement = mSize - 1;
+		size_t indexOfLastElement = mSize - 2;
 		mComponentArray[indexOfRemovedEntity] = mComponentArray[indexOfLastElement];
 
 		// Update map to point to moved spot
@@ -53,16 +53,13 @@ public:
 
 	T& GetData(Entity entity)
 	{		
-
-		//assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Retrieving non-existent component.");
-
-		if(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end()){
-			return mComponentArray[mEntityToIndexMap[entity]];
-		}else{
-			std::__throw_runtime_error("Retrieving non-existent component.");
+		assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Retrieving non-existent component.");
 			
-		}
-
+		
+		auto &comp = mComponentArray[mEntityToIndexMap[entity]];
+		
+		return comp;
+		
 		
 	}
 
@@ -78,7 +75,7 @@ private:
 	std::array<T, MAX_ENTITIES> mComponentArray{};
 	std::unordered_map<Entity, size_t> mEntityToIndexMap{};
 	std::unordered_map<size_t, Entity> mIndexToEntityMap{};
-	size_t mSize{};
+	size_t mSize{1};
 };
 
 

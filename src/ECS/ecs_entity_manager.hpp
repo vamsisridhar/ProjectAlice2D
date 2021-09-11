@@ -11,7 +11,7 @@ namespace lve{
 public:
 	EntityManager()
 	{
-		for (Entity entity = 0; entity < MAX_ENTITIES; ++entity)
+		for (Entity entity = 1; entity < MAX_ENTITIES; ++entity)
 		{
 			mAvailableEntities.push(entity);
 		}
