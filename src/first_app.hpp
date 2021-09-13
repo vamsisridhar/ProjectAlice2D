@@ -41,9 +41,6 @@ class FirstApp {
   std::vector<Entity> entities;
   std::shared_ptr<PhysicsSystem> physicsSystem;
   Coordinator ecsCoordinator;
-
-  //std::vector<LveGameObject> gameObjects;
-
   
 };
 }  // namespace lve

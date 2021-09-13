@@ -60,17 +60,15 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
 }
 
 
-void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<Entity> &gameObjects, Coordinator &ecsCoordinator){
+void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<Entity> &entities, Coordinator &ecsCoordinator){
   lvePipeline->bind(commandBuffer);
-  for (auto&obj:gameObjects){
-    if (obj != 0){
-
-    ecsCoordinator.GetComponent<Transform>(obj).rotation = glm::mod(ecsCoordinator.GetComponent<Transform>(obj).rotation + 0.01f, glm::two_pi<float>());
+  for (auto&entity:entities){
+    if (entity != 0){
 
     SimplePushConstantData push{};
-    push.offset = {ecsCoordinator.GetComponent<Transform>(obj).position.x, -ecsCoordinator.GetComponent<Transform>(obj).position.y};
-    push.color = ecsCoordinator.GetComponent<Model>(obj).color;
-    push.transform = ecsCoordinator.GetComponent<Transform>(obj).mat2();
+    push.offset = {ecsCoordinator.GetComponent<Transform>(entity).position.x, -ecsCoordinator.GetComponent<Transform>(entity).position.y};
+    push.color = ecsCoordinator.GetComponent<Model>(entity).color;
+    push.transform = ecsCoordinator.GetComponent<Transform>(entity).mat2();
 
     vkCmdPushConstants(
       commandBuffer, 
@@ -80,8 +78,8 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::v
       sizeof(SimplePushConstantData), 
       &push);
 
-    ecsCoordinator.GetComponent<Model>(obj).model->bind(commandBuffer);
-    ecsCoordinator.GetComponent<Model>(obj).model->draw(commandBuffer);
+    ecsCoordinator.GetComponent<Model>(entity).model->bind(commandBuffer);
+    ecsCoordinator.GetComponent<Model>(entity).model->draw(commandBuffer);
     }
   }
 }

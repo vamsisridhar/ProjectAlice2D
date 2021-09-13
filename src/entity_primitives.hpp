@@ -1,6 +1,8 @@
 #pragma once
 
 #include "entity_components.hpp"
+#include "entity_models.hpp"
+#include <vector>
 
 namespace lve{
 
@@ -10,39 +12,37 @@ namespace lve{
 
         Primitive(LveDevice &device, Coordinator &coordinator) : lveDevice{device}, ecsCoordinator{coordinator}{}
 
-        std::unique_ptr<LveModel> createCircleModel(unsigned int numSides) {
-            std::vector<LveModel::Vertex> uniqueVertices{};
-            for (int i = 0; i < numSides; i++) {
-                float angle = i * glm::two_pi<float>() / numSides;
-                uniqueVertices.push_back({{glm::cos(angle), glm::sin(angle)}});
-            }
-            uniqueVertices.push_back({});  // adds center vertex at 0, 0
-            
-            std::vector<LveModel::Vertex> vertices{};
-            for (int i = 0; i < numSides; i++) {
-                vertices.push_back(uniqueVertices[i]);
-                vertices.push_back(uniqueVertices[(i + 1) % numSides]);
-                vertices.push_back(uniqueVertices[numSides]);
-            }
-            return std::make_unique<LveModel>(lveDevice, vertices);
-        }
 
         Entity Circle(glm::vec2 pos, float radius, glm::vec2 vel, glm::vec2 acc, glm::vec3 color){
-            std::shared_ptr<LveModel> circleModel = createCircleModel(64);
+            ModelBuilder::MeshData circleModel = modelBuilder.createCircleModel(radius, 64, lveDevice);
 
             Entity circle = ecsCoordinator.CreateEntity();
 
-            ecsCoordinator.AddComponent(circle, Model{ .model = circleModel, .color = color});
-            ecsCoordinator.AddComponent(circle, Transform{ .position = pos, .scale =  {radius, radius}, .rotation = 0});
+            ecsCoordinator.AddComponent(circle, Model{ .model = circleModel.mesh,.vertices = circleModel.vertices, .color = color});
+            ecsCoordinator.AddComponent(circle, Transform{ .position = pos, .scale =  {1.f, 1.f}, .rotation = 0});
             ecsCoordinator.AddComponent(circle, RigidBody{.velocity= vel, .acceleration = acc});
 
             return circle;
         }
 
+        Entity Rect(glm::vec2 centrePos, float width, float height){
+            ModelBuilder::MeshData rectModel = modelBuilder.createRectModel(width, height, lveDevice);
+
+            Entity rect = ecsCoordinator.CreateEntity();
+
+            ecsCoordinator.AddComponent(rect, Model{ .model = rectModel.mesh,.vertices = rectModel.vertices, .color = {1.f, 0.f, 0.f}});
+            ecsCoordinator.AddComponent(rect, Transform{ .position = centrePos, .scale =  {0.5, 0.5}, .rotation = 0});
+            ecsCoordinator.AddComponent(rect, RigidBody{.velocity= {0.f, 0.f}, .acceleration = {0.f, 0.f}});
+
+            return rect;
+        }
+
+
         private:
 
         LveDevice &lveDevice;
         Coordinator &ecsCoordinator;
+        ModelBuilder modelBuilder;
 
 
 

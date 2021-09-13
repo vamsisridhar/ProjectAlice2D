@@ -79,9 +79,11 @@ void FirstApp::loadGameObjects() {
 
   Primitive primitive{lveDevice, ecsCoordinator};
 
-  entities[0] = primitive.Circle({.5f,.5f}, 0.1f, {.0f, .0f}, {.0f, -9.8f}, {.1f,.1f,.5f});
-  entities[1] = primitive.Circle({-.5f,.5f}, 0.1f, {.0f, .0f}, {.0f, -9.8f}, {.5f,.1f,.5f});
-  entities[2] = primitive.Circle({.0f,.5f}, 0.1f, {.0f, .0f}, {.0f, -9.8f}, {.1f,.5f,.5f});
+  entities[0] = primitive.Circle({.5f,.5f}, 0.1f, {.0f, .0f}, {.0f, -.098f}, {.1f,.1f,.5f});
+  entities[1] = primitive.Circle({.5f,-.5f}, 0.1f, {.0f, .0f}, {.0f, .0f}, {.5f,.1f,.5f});
+  //entities[2] = primitive.Circle({.0f,.5f}, 0.1f, {.0f, .0f}, {.0f, -9.8f}, {.1f,.5f,.5f});
+
+  //entities[3] = primitive.Rect({.5f, .5f}, .005f, .7f);
 
 
 }

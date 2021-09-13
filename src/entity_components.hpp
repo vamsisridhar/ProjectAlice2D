@@ -4,6 +4,7 @@
 #include "ECS\ecs_coordinator.hpp"
 #include "lve_model.hpp"
 #include <memory>
+#include <vector>
 
 namespace lve{
 
@@ -12,6 +13,7 @@ namespace lve{
     struct Model
     {
         std::shared_ptr<LveModel> model{};
+        std::vector<LveModel::Vertex> vertices{};
         glm::vec3 color{};
     };
     
