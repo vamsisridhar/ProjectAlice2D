@@ -12,9 +12,16 @@ namespace lve{
 
     struct Model
     {
+        //contains proper vertices
         std::shared_ptr<LveModel> model{};
-        std::vector<LveModel::Vertex> vertices{};
+        int resolution;
         glm::vec3 color{};
+        const char* type;
+        const char* name;
+
+        std::vector<LveModel::Vertex> getRawVertices(){
+            return model.get()->vertices;
+        }
     };
     
     struct Transform
@@ -32,6 +39,8 @@ namespace lve{
             return rotMatrix * scaleMat;
         }
     };
+
+    
 
     struct RigidBody
     {

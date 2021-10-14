@@ -9,7 +9,7 @@
 // std
 #include <memory>
 #include <vector>
-#include <chrono>
+
 
 namespace lve {
 
@@ -29,14 +29,9 @@ class FirstApp {
  private:
   void loadGameObjects();
 
-  LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
+  LveWindow lveWindow{WIDTH, HEIGHT, "Alice 2D"};
   LveDevice lveDevice{lveWindow};
   LveRenderer lveRenderer{lveWindow, lveDevice};
-
-  float dt = 0.0f;
-  bool clockStarted = false;
-  std::chrono::high_resolution_clock::time_point startTime;
-  std::chrono::high_resolution_clock::time_point stopTime;
 
   std::vector<Entity> entities;
   std::shared_ptr<PhysicsSystem> physicsSystem;

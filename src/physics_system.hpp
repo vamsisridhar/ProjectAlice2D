@@ -1,6 +1,7 @@
 #pragma once
 #include "ECS\ecs_system.hpp"
 #include "ECS\ecs_coordinator.hpp"
+#include "entity_models.hpp"
 
 namespace lve{
 
@@ -11,7 +12,7 @@ namespace lve{
 
         void Update(float dt, Coordinator &ecsCoordinator, std::vector<Entity> &mEntities);
 
-
+        ModelBuilder modelBuilder{};
     };
 
 }

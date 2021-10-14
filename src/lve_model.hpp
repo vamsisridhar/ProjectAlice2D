@@ -30,6 +30,8 @@ class LveModel {
   void bind(VkCommandBuffer commandBuffer);
   void draw(VkCommandBuffer commandBuffer);
 
+  std::vector<LveModel::Vertex> vertices;
+
  private:
   void createVertexBuffers(const std::vector<Vertex> &vertices);
 

@@ -10,6 +10,7 @@
 #include <array>
 #include <cassert>
 #include <stdexcept>
+#include <chrono>
 
 
 namespace lve {
@@ -23,24 +24,19 @@ FirstApp::~FirstApp() { }
 void FirstApp::run() {
   SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
 
+  auto currentTime = std::chrono::high_resolution_clock::now();
+
   while (!lveWindow.shouldClose()) {
     glfwPollEvents();
 
-    
-    if (clockStarted)
-    {
-      stopTime = std::chrono::high_resolution_clock::now();
-      dt = std::chrono::duration<float, std::chrono::seconds::period>(stopTime - startTime).count();
-      clockStarted = false;
-    }
+    auto newTime = std::chrono::high_resolution_clock::now();
+    float dt = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+    currentTime = newTime;
 
-    physicsSystem->Update(dt, ecsCoordinator, entities);
 
-    if (!clockStarted)
-    {
-      startTime = std::chrono::high_resolution_clock::now();
-      clockStarted = true;
-    }
+    physicsSystem->Update(0.01, ecsCoordinator, entities);
+
+
 
 		
 
@@ -79,11 +75,11 @@ void FirstApp::loadGameObjects() {
 
   Primitive primitive{lveDevice, ecsCoordinator};
 
-  entities[0] = primitive.Circle({.5f,.5f}, 0.1f, {.0f, .0f}, {.0f, -.098f}, {.1f,.1f,.5f});
-  entities[1] = primitive.Circle({.5f,-.5f}, 0.1f, {.0f, .0f}, {.0f, .0f}, {.5f,.1f,.5f});
+  entities[0] = primitive.Circle({.5f,-.2f}, 0.1f, {.0f, .0f}, {.0f,-0.98f}, {.1f,.1f,.5f});
+  entities[1] = primitive.Circle({.0f,.0f}, 0.1f, {.0f, .0f}, {.0f, .0f}, {.5f,.1f,.5f});
   //entities[2] = primitive.Circle({.0f,.5f}, 0.1f, {.0f, .0f}, {.0f, -9.8f}, {.1f,.5f,.5f});
-
-  //entities[3] = primitive.Rect({.5f, .5f}, .005f, .7f);
+  entities[3] = primitive.Line({.5f, .5f}, 2.f, 0, "Pointer" ,{1.f, 0.f, 0.f});
+  entities[4] = primitive.Line({.5f, .5f}, 2.f, 355, "Turny");
 
 
 }

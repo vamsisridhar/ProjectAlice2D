@@ -9,7 +9,7 @@
 #include <array>
 #include <cassert>
 #include <stdexcept>
-
+#include <cstring>
 namespace lve {
 
 struct SimplePushConstantData {
@@ -19,6 +19,7 @@ struct SimplePushConstantData {
 };
 
 SimpleRenderSystem::SimpleRenderSystem(LveDevice &device, VkRenderPass renderPass) : lveDevice{device} {
+  // two render passes, one for fill and another for line
   createPipelineLayout();
   createPipeline(renderPass);
 }
@@ -50,6 +51,11 @@ void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {
 
   PipelineConfigInfo pipelineConfig{};
   LvePipeline::defaultPipelineConfigInfo(pipelineConfig);
+  //linepipeline config
+  //linepipeline config info
+
+  // might need two renderpasses
+
   pipelineConfig.renderPass = renderPass;
   pipelineConfig.pipelineLayout = pipelineLayout;
   lvePipeline = std::make_unique<LvePipeline>(
@@ -66,9 +72,15 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::v
     if (entity != 0){
 
     SimplePushConstantData push{};
-    push.offset = {ecsCoordinator.GetComponent<Transform>(entity).position.x, -ecsCoordinator.GetComponent<Transform>(entity).position.y};
-    push.color = ecsCoordinator.GetComponent<Model>(entity).color;
-    push.transform = ecsCoordinator.GetComponent<Transform>(entity).mat2();
+
+
+      
+      push.offset = {ecsCoordinator.GetComponent<Transform>(entity).position.x, -ecsCoordinator.GetComponent<Transform>(entity).position.y};
+      push.color = ecsCoordinator.GetComponent<Model>(entity).color;
+      push.transform = ecsCoordinator.GetComponent<Transform>(entity).mat2();
+  
+    
+
 
     vkCmdPushConstants(
       commandBuffer, 
